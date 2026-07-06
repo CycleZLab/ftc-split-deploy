@@ -1,0 +1,54 @@
+name: Publish to Maven repo (GitHub Pages)
+
+# Pushing a tag like v0.1.0 publishes that version to the gh-pages branch,
+# which GitHub Pages serves at https://repo.cyclezlab.com.
+on:
+  push:
+    tags: ['v*']
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency: pages-maven-repo
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      # Seed the staging dir with already-published versions so Gradle merges
+      # maven-metadata.xml instead of replacing it. Fails harmlessly on the
+      # first release, before gh-pages exists.
+      - uses: actions/checkout@v4
+        continue-on-error: true
+        with:
+          ref: gh-pages
+          path: existing-repo
+
+      - name: Copy existing repo content into staging
+        run: |
+          mkdir -p build/staging-repo
+          rm -rf existing-repo/.git
+          if [ -d existing-repo ]; then cp -R existing-repo/. build/staging-repo/; fi
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Build and stage Maven artifacts
+        run: ./gradlew publishAllPublicationsToStagingRepository
+
+      - name: Add landing page
+        run: cp pages/index.html build/staging-repo/index.html
+
+      - name: Append to gh-pages (existing versions are kept)
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: build/staging-repo
+          keep_files: true
+          cname: repo.cyclezlab.com
+          commit_message: 'Publish ${{ github.ref_name }}'

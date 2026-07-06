@@ -4,16 +4,31 @@ plugins {
     id 'maven-publish'
 }
 
-// Change the group to your own coordinates before publishing
-// (e.g. 'com.github.<your-github-user>' for JitPack).
 group = 'dev.splitdeploy'
-version = '0.1.0'
+// In CI a release tag like v0.1.0 overrides this; keep it as the next
+// planned version for local/composite-build use.
+def refName = System.getenv('GITHUB_REF_NAME')
+version = (refName ==~ /v\d.*/) ? refName.substring(1) : '0.1.0'
 
 repositories {
     mavenCentral()
 }
 
+// `publishAllPublicationsToStagingRepository` lays out a Maven repo in
+// build/staging-repo; CI appends it to the gh-pages branch, which GitHub
+// Pages serves at https://repo.cyclezlab.com.
+publishing {
+    repositories {
+        maven {
+            name = 'staging'
+            url = layout.buildDirectory.dir('staging-repo')
+        }
+    }
+}
+
 gradlePlugin {
+    website = 'https://github.com/CycleZLab/ftc-split-deploy'
+    vcsUrl = 'https://github.com/CycleZLab/ftc-split-deploy'
     plugins {
         splitDeploy {
             id = 'ftc.splitdeploy'

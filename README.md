@@ -30,30 +30,20 @@ workspace (SDK 8.x+ / Android Gradle Plugin 8.x). Installation is **two edits**:
 ```groovy
 pluginManagement {
     repositories {
-        maven { url 'https://jitpack.io' }
+        maven { url 'https://repo.cyclezlab.com' }
         gradlePluginPortal()
         google()
         mavenCentral()
     }
-    resolutionStrategy {
-        eachPlugin {
-            if (requested.id.id == 'ftc.splitdeploy') {
-                // GitHub source is built on demand by JitPack:
-                useModule("com.github.YOUR_GITHUB_USER:ftc-split-deploy:${requested.version}")
-            }
-        }
-    }
 }
 
 plugins {
-    id 'ftc.splitdeploy' version 'v0.1.0'   // = a git tag of this repo
+    id 'ftc.splitdeploy' version '0.1.0'
 }
 
 include ':FtcRobotController'
 include ':TeamCode'
 ```
-
-*(Replace `YOUR_GITHUB_USER` with the GitHub account hosting this repo.)*
 
 ### 2. `TeamCode/build.gradle` — delete one line:
 
@@ -125,7 +115,7 @@ The deploy is a clean app restart (USB hardware re-enumerates), so expect
 
 ---
 
-## Alternative installation (no JitPack)
+## Alternative installation (offline / hacking on the plugin)
 
 Clone this repo next to your robot project and use a composite build:
 
@@ -148,12 +138,17 @@ Same two-edit rule applies (delete the `build.common.gradle` line in
 
 ## Publishing / maintaining (for the team that owns this repo)
 
-1. Push this folder to GitHub as `ftc-split-deploy`.
-2. Tag releases: `git tag v0.1.0 && git push origin main --tags`.
-3. That's all — JitPack builds tags from source on first request
-   (`jitpack.yml` pins JDK 17; the Gradle wrapper is committed).
+Releases are published to a Maven repository hosted on GitHub Pages
+(`gh-pages` branch, served at <https://repo.cyclezlab.com>):
 
-Consumers reference tags in the `plugins { }` block as shown in Quick start.
+1. Bump `version` in `build.gradle` (the fallback for local builds).
+2. Tag and push: `git tag v0.2.0 && git push origin main --tags`.
+3. The `publish.yml` GitHub Action builds the tag, derives the version from
+   the tag name, and appends the artifacts to `gh-pages`. Old versions stay
+   available, so teams pinned to earlier releases keep building.
+
+Consumers reference the version (without the `v`) in the `plugins { }` block
+as shown in Quick start.
 
 ## Project layout
 
