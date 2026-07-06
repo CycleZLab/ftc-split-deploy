@@ -136,20 +136,6 @@ Same two-edit rule applies (delete the `build.common.gradle` line in
 
 ---
 
-## Publishing / maintaining (for the team that owns this repo)
-
-Releases are published to a Maven repository hosted on GitHub Pages
-(`gh-pages` branch, served at <https://repo.cyclezlab.com>):
-
-1. Bump `version` in `build.gradle` (the fallback for local builds).
-2. Tag and push: `git tag v0.2.0 && git push origin main --tags`.
-3. The `publish.yml` GitHub Action builds the tag, derives the version from
-   the tag name, and appends the artifacts to `gh-pages`. Old versions stay
-   available, so teams pinned to earlier releases keep building.
-
-Consumers reference the version (without the `v`) in the `plugins { }` block
-as shown in Quick start.
-
 ## Project layout
 
 ```
