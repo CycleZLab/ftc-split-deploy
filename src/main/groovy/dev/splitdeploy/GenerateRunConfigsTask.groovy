@@ -1,33 +1,19 @@
 package dev.splitdeploy
 
-import groovy.xml.XmlNodePrinter
-import groovy.xml.XmlParser
 import org.gradle.api.DefaultTask
 import org.gradle.api.file.DirectoryProperty
-import org.gradle.api.file.RegularFileProperty
-import org.gradle.api.tasks.Internal
 import org.gradle.api.tasks.OutputDirectory
 import org.gradle.api.tasks.TaskAction
 
+/**
+ * Writes the single run configuration teams use into .run/: the fast split
+ * deploy. It is a plain Gradle run configuration; the plugin does not touch
+ * any other Android Studio / IntelliJ file.
+ */
 abstract class GenerateRunConfigsTask extends DefaultTask {
-
-    /**
-     * Run-configuration list entries Android Studio auto-creates for every
-     * Android app module after each sync (there is no IDE setting to stop it).
-     * With this plugin the only correct entry points are the two Gradle
-     * configurations, so these are scrubbed from the workspace file.
-     */
-    private static final List<String> IDE_AUTO_CONFIG_TYPES =
-        ['AndroidRunConfigurationType', 'AndroidTestRunConfigurationType']
-    private static final List<String> IDE_AUTO_ITEM_PREFIXES =
-        ['Android App.', 'Android Tests.']
-    private static final String SELECTED_CONFIG = 'Gradle.TeamCode fast deploy'
 
     @OutputDirectory
     abstract DirectoryProperty getRunDirectory()
-
-    @Internal
-    abstract RegularFileProperty getIdeaWorkspaceXml()
 
     @TaskAction
     void generate() {
@@ -35,61 +21,7 @@ abstract class GenerateRunConfigsTask extends DefaultTask {
         directory.mkdirs()
         new File(directory, 'TeamCode fast deploy.run.xml').text =
             gradleRunConfig('TeamCode fast deploy', ':TeamCode:deployTeamCode')
-        // Named like the stock FTC run configuration: pressing it performs the
-        // safe full install (base + TeamCode split), which is what the stock
-        // "TeamCode" entry effectively did.
-        new File(directory, 'TeamCode.run.xml').text =
-            gradleRunConfig('TeamCode', ':FtcBase:installFullApp')
-        // Stale configs from older plugin versions (doctor/rollback are still
-        // available as Gradle tasks, just not as dropdown entries).
-        ['Split deploy doctor.run.xml', 'TeamCode rollback.run.xml',
-         'Robot full install.run.xml'].each {
-            new File(directory, it).delete()
-        }
         logger.lifecycle('Wrote .run/ configurations. Reload the project to see them in Android Studio.')
-        scrubIdeAutoCreatedConfigs()
-    }
-
-    private void scrubIdeAutoCreatedConfigs() {
-        def file = ideaWorkspaceXml.getOrNull()?.asFile
-        if (file == null || !file.isFile()) {
-            return
-        }
-        try {
-            def workspace = new XmlParser().parse(file)
-            def runManager = workspace.component.find { it.@name == 'RunManager' }
-            if (runManager == null) {
-                return
-            }
-            def staleConfigs = runManager.configuration.findAll {
-                it.@type in IDE_AUTO_CONFIG_TYPES
-            }
-            def staleItems = runManager.depthFirst().findAll { node ->
-                node instanceof groovy.util.Node && node.name() == 'item' &&
-                    IDE_AUTO_ITEM_PREFIXES.any { node.@itemvalue?.toString()?.startsWith(it) }
-            }
-            def selected = runManager.@selected?.toString()
-            def selectStale = selected != null &&
-                IDE_AUTO_ITEM_PREFIXES.any { selected.startsWith(it) }
-            if (!staleConfigs && !staleItems && !selectStale) {
-                return
-            }
-            staleConfigs.each { runManager.remove(it) }
-            staleItems.each { it.parent().remove(it) }
-            if (selectStale || selected == null) {
-                runManager.@selected = SELECTED_CONFIG
-            }
-            def writer = new StringWriter()
-            def printer = new XmlNodePrinter(new PrintWriter(writer))
-            printer.preserveWhitespace = true
-            printer.print(workspace)
-            file.text = '<?xml version="1.0" encoding="UTF-8"?>\n' + writer.toString()
-            logger.lifecycle("Removed ${staleConfigs.size()} Android Studio auto-created app run configuration(s) from .idea/workspace.xml.")
-            logger.lifecycle('If Android Studio is currently open, quit it and re-run initSplitDeploy: the IDE keeps run configurations in memory and writes the old list back on exit.')
-        } catch (Exception e) {
-            // Never fail the build over IDE bookkeeping.
-            logger.warn("Could not clean Android Studio run configurations in ${file}: ${e.message}")
-        }
     }
 
     private static String gradleRunConfig(String name, String task) {

@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.2.6
+
+- `initSplitDeploy` now writes exactly one run configuration —
+  *TeamCode fast deploy* — and nothing else.
+- Removed all Android Studio / IntelliJ file manipulation: the
+  `.idea/workspace.xml` run-configuration scrubbing and the watch-feature
+  base-manifest hack are gone. The plugin no longer reads or writes any IDE
+  file other than the single `.run/` config it generates. The base manifest
+  reverts to the plain stub, so one `installFullApp` is needed after
+  upgrading from 0.2.4/0.2.5.
+
 ## 0.2.5
 
 - The generated run configurations are now *TeamCode* (full install — the

@@ -38,7 +38,7 @@ pluginManagement {
 }
 
 plugins {
-    id 'ftc.splitdeploy' version '0.2.5'
+    id 'ftc.splitdeploy' version '0.2.6'
 }
 
 include ':FtcRobotController'
@@ -67,13 +67,17 @@ dependencies, manifest, code) exactly as it is.
 
 ## Daily usage
 
-| Action | Task / dropdown entry | When |
-|---|---|---|
-| **Fast deploy** | `deployTeamCode` / *“TeamCode fast deploy”* | After every code edit. Builds + installs only your split, restarts the RC app. |
-| **Full install** | `installFullApp` / *“TeamCode”* | First time; after changing `build.dependencies.gradle`, the FTC SDK version, or anything outside TeamCode. |
-| **Preflight** | `splitDeployDoctor` | Read-only check of the device, split layout, duplicate OnBot classes, and base compatibility. |
-| **Rollback** | `rollbackTeamCode` | Restores the split backed up immediately before the most recent changed fast deploy. |
-| Generate run configs | `initSplitDeploy` | Once per project (writes `.run/*.xml`, shared with the whole team via git). |
+| Action | Task | Dropdown entry | When |
+|---|---|---|---|
+| **Fast deploy** | `deployTeamCode` | *“TeamCode fast deploy”* | After every code edit. Builds + installs only your split, restarts the RC app. |
+| **Full install** | `installFullApp` | — | First time; after changing `build.dependencies.gradle`, the FTC SDK version, or anything outside TeamCode. |
+| **Preflight** | `splitDeployDoctor` | — | Read-only check of the device, split layout, duplicate OnBot classes, and base compatibility. |
+| **Rollback** | `rollbackTeamCode` | — | Restores the split backed up immediately before the most recent changed fast deploy. |
+| Generate run config | `initSplitDeploy` | — | Once per project (writes `.run/TeamCode fast deploy.run.xml`, shared with the team via git). |
+
+`initSplitDeploy` writes exactly one run configuration — *TeamCode fast
+deploy* — and touches nothing else in the IDE. Run the other tasks from the
+Gradle tool window or the command line.
 
 In Android Studio: pick **TeamCode fast deploy** in the run-configuration
 dropdown once, then just press Run after each edit. A normal warm deploy waits
