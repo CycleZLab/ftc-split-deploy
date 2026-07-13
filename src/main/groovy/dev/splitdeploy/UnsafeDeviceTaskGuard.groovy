@@ -30,10 +30,19 @@ class UnsafeDeviceTaskGuard {
     static void guard(Project project) {
         project.tasks.configureEach { t ->
             if (isUnsafeDeviceTask(t.name)) {
-                t.group = null // hide from the grouped `gradlew tasks` listing
-                t.description = 'Disabled by ftc.splitdeploy - use installFullApp / deployTeamCode.'
                 t.doFirst {
                     throw new GradleException("Task '${t.name}' ${MESSAGE}")
+                }
+            }
+        }
+        // AGP assigns the "install" group after our configureEach action runs,
+        // so demote these from the grouped `gradlew tasks` listing once every
+        // project is fully configured (last configuration action wins).
+        project.gradle.projectsEvaluated {
+            project.tasks.names.findAll { isUnsafeDeviceTask(it) }.each { name ->
+                project.tasks.named(name) { t ->
+                    t.group = null
+                    t.description = 'Disabled by ftc.splitdeploy - use installFullApp / deployTeamCode.'
                 }
             }
         }

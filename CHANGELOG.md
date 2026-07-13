@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.2.3
+
+- Actually hide the blocked AGP device tasks from the grouped task listing:
+  AGP assigns the "install" group after plugin configuration, so the demotion
+  now runs once all projects are evaluated.
+
 ## 0.2.2
 
 - Block AGP's raw device tasks (`installDebug`, `installRelease`,
