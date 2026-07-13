@@ -1,0 +1,60 @@
+{
+  "formatVersion": "1.1",
+  "component": {
+    "group": "dev.splitdeploy",
+    "module": "ftc-split-deploy",
+    "version": "0.2.6",
+    "attributes": {
+      "org.gradle.status": "release"
+    }
+  },
+  "createdBy": {
+    "gradle": {
+      "version": "8.14.2"
+    }
+  },
+  "variants": [
+    {
+      "name": "apiElements",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.jvm.version": 17,
+        "org.gradle.libraryelements": "jar",
+        "org.gradle.usage": "java-api"
+      },
+      "files": [
+        {
+          "name": "ftc-split-deploy-0.2.6.jar",
+          "url": "ftc-split-deploy-0.2.6.jar",
+          "size": 161733,
+          "sha512": "d8799c0acbe3d4678e088be84cfa8f0468dc6a9e79e983d397e84728fea4ac1e057b56d5d3eb23289d85be93d5c35f09262f9f6147c465d039537ee85554bd96",
+          "sha256": "265e1ec4530560f1d41f8097e973b850a61c9ced5031af7c628e08132c92c59c",
+          "sha1": "a1813d16bf215aba94a56ecaf5656de1156c7e41",
+          "md5": "842c9bdf6951cb7543891a1e238ed0f8"
+        }
+      ]
+    },
+    {
+      "name": "runtimeElements",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.jvm.version": 17,
+        "org.gradle.libraryelements": "jar",
+        "org.gradle.usage": "java-runtime"
+      },
+      "files": [
+        {
+          "name": "ftc-split-deploy-0.2.6.jar",
+          "url": "ftc-split-deploy-0.2.6.jar",
+          "size": 161733,
+          "sha512": "d8799c0acbe3d4678e088be84cfa8f0468dc6a9e79e983d397e84728fea4ac1e057b56d5d3eb23289d85be93d5c35f09262f9f6147c465d039537ee85554bd96",
+          "sha256": "265e1ec4530560f1d41f8097e973b850a61c9ced5031af7c628e08132c92c59c",
+          "sha1": "a1813d16bf215aba94a56ecaf5656de1156c7e41",
+          "md5": "842c9bdf6951cb7543891a1e238ed0f8"
+        }
+      ]
+    }
+  ]
+}
