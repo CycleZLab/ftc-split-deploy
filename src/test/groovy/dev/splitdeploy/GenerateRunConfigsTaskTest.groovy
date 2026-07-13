@@ -55,4 +55,69 @@ class GenerateRunConfigsTaskTest {
         def names = output.listFiles()*.name.sort()
         assertEquals(['Robot full install.run.xml', 'TeamCode fast deploy.run.xml'], names)
     }
+
+    @Test
+    void scrubsAndroidStudioAutoCreatedConfigsFromWorkspaceXml() {
+        def project = ProjectBuilder.builder().withProjectDir(directory.toFile()).build()
+        def task = project.tasks.register('generateConfigs', GenerateRunConfigsTask).get()
+        task.runDirectory.set(directory.resolve('.run').toFile())
+        def workspace = directory.resolve('.idea/workspace.xml').toFile()
+        workspace.parentFile.mkdirs()
+        workspace.text = '''<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="RunManager" selected="Android App.TeamCode">
+    <configuration name="TeamCode" type="AndroidRunConfigurationType" factoryName="Android App">
+      <module name="Project.TeamCode" />
+      <method v="2" />
+    </configuration>
+    <configuration name="FtcBase" type="AndroidRunConfigurationType" factoryName="Android App">
+      <module name="Project.FtcBase" />
+    </configuration>
+    <list>
+      <item itemvalue="Android App.TeamCode" />
+      <item itemvalue="Gradle.TeamCode fast deploy" />
+    </list>
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task" />
+  </component>
+</project>
+'''
+        task.ideaWorkspaceXml.set(workspace)
+
+        task.generate()
+
+        def xml = new XmlSlurper().parse(workspace)
+        def runManager = xml.component.find { it.@name == 'RunManager' }
+        assertEquals(0, runManager.configuration.size())
+        assertEquals('Gradle.TeamCode fast deploy', runManager.@selected.text())
+        def items = runManager.list.item*.@itemvalue*.text()
+        assertEquals(['Gradle.TeamCode fast deploy'], items)
+        // Unrelated components survive untouched.
+        assertEquals(1, xml.component.findAll { it.@name == 'TaskManager' }.size())
+    }
+
+    @Test
+    void leavesWorkspaceXmlAloneWhenNothingToScrub() {
+        def project = ProjectBuilder.builder().withProjectDir(directory.toFile()).build()
+        def task = project.tasks.register('generateConfigs', GenerateRunConfigsTask).get()
+        task.runDirectory.set(directory.resolve('.run').toFile())
+        def workspace = directory.resolve('.idea/workspace.xml').toFile()
+        workspace.parentFile.mkdirs()
+        def original = '''<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="RunManager" selected="Gradle.TeamCode fast deploy">
+    <list>
+      <item itemvalue="Gradle.TeamCode fast deploy" />
+    </list>
+  </component>
+</project>
+'''
+        workspace.text = original
+        task.ideaWorkspaceXml.set(workspace)
+
+        task.generate()
+
+        assertEquals(original, workspace.text)
+    }
 }

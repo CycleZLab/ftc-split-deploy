@@ -58,6 +58,9 @@ class TeamCodeFeaturePlugin implements Plugin<Project> {
             t.group = 'ftc'
             t.description = 'Writes Android Studio run configurations (.run/) for the split-deploy workflow.'
             t.runDirectory.set(p.rootProject.layout.projectDirectory.dir('.run'))
+            t.ideaWorkspaceXml.set(p.rootProject.layout.projectDirectory.file('.idea/workspace.xml'))
+            // Always re-run: the IDE can re-create stale configurations at any time.
+            t.outputs.upToDateWhen { false }
         }
     }
 }
