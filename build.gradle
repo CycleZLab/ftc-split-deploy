@@ -5,13 +5,24 @@ plugins {
 }
 
 group = 'dev.splitdeploy'
-// In CI a release tag like v0.1.0 overrides this; keep it as the next
+// In CI a release tag like v0.2.0 overrides this; keep it as the next
 // planned version for local/composite-build use.
 def refName = System.getenv('GITHUB_REF_NAME')
-version = (refName ==~ /v\d.*/) ? refName.substring(1) : '0.1.0'
+version = (refName ==~ /v\d.*/) ? refName.substring(1) : '0.2.0'
 
 repositories {
     mavenCentral()
+}
+
+dependencies {
+    testImplementation gradleTestKit()
+    testImplementation 'org.junit.jupiter:junit-jupiter:5.11.4'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher:1.11.4'
+}
+
+tasks.withType(Test).configureEach {
+    useJUnitPlatform()
+    systemProperty 'splitDeployBuildVersion', version.toString()
 }
 
 // `publishAllPublicationsToStagingRepository` lays out a Maven repo in

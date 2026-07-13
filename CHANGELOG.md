@@ -1,0 +1,24 @@
+# Changelog
+
+## 0.2.0
+
+- Replace closure tasks with typed, configuration-cache-safe Gradle tasks.
+- Add exact adb device selection and actionable offline/unauthorized errors.
+- Make full install non-destructive by default, grant runtime permissions, and
+  refuse the explicit uninstall fallback over network adb.
+- Record and validate per-device base compatibility fingerprints, including
+  resolved external dependency artifacts.
+- Back up the installed TeamCode split before transactional replacement; clean
+  up or abandon every failed PackageInstaller session and verify backup hashes.
+- Add `rollbackTeamCode` and the read-only `splitDeployDoctor` preflight task.
+- Wait for the FTC SDK ready marker after restart instead of reporting success
+  as soon as Android launches the process.
+- Block matching top-level classes between repository TeamCode and OnBot Java
+  before both full and fast installs by default.
+- Avoid rewriting the generated base manifest when its contents are unchanged.
+- Add parser, hashing, state, and duplicate-detection tests plus CI checks.
+
+## 0.1.0
+
+- Initial settings plugin, generated base application, TeamCode dynamic feature,
+  full install, and partial split deployment workflow.

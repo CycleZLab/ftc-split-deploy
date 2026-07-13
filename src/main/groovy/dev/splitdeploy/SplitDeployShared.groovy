@@ -4,13 +4,12 @@ import org.gradle.api.GradleException
 import org.gradle.api.Project
 
 /**
- * Shared helpers: FTC signing config, version sync with the FtcRobotController
- * manifest, and adb plumbing for the deploy tasks.
+ * Shared configuration helpers for the generated Android modules.
  */
 class SplitDeployShared {
 
     static final String PACKAGE = 'com.qualcomm.ftcrobotcontroller'
-    static final String REMOTE_TMP = '/data/local/tmp/teamcode.split.apk'
+    static final String SPLIT_NAME = 'TeamCode'
 
     /** Mirrors the signing setup of the stock build.common.gradle. */
     static void configureSigning(Project p, Object android) {
@@ -36,6 +35,11 @@ class SplitDeployShared {
             release.storeFile = debugKeystore
             release.storePassword = 'android'
         }
+
+        // Dynamic-feature modules inherit signing from their base. This method
+        // is deliberately called only for :FtcBase.
+        android.defaultConfig.signingConfig = android.signingConfigs.getByName('debug')
+        android.buildTypes.getByName('release').signingConfig = android.signingConfigs.getByName('release')
     }
 
     /**
@@ -64,43 +68,15 @@ class SplitDeployShared {
         android.compileSdk = 34
         android.defaultConfig.minSdk = 24
         android.defaultConfig.targetSdk = 28
-        android.defaultConfig.signingConfig = android.signingConfigs.getByName('debug')
-        android.buildTypes.getByName('release').signingConfig = android.signingConfigs.getByName('release')
         android.compileOptions.sourceCompatibility = org.gradle.api.JavaVersion.VERSION_1_8
         android.compileOptions.targetCompatibility = org.gradle.api.JavaVersion.VERSION_1_8
         android.packagingOptions.jniLibs.useLegacyPackaging = true
         android.packagingOptions.jniLibs.pickFirsts.add('**/*.so')
     }
 
-    static String adbPath(Project p) {
+    static File adbFile(Project p) {
         def android = p.extensions.getByName('android')
         def isWindows = System.getProperty('os.name').toLowerCase().contains('windows')
-        return new File(android.sdkDirectory, "platform-tools/adb${isWindows ? '.exe' : ''}").absolutePath
-    }
-
-    /** Runs adb with the given args, returns combined stdout+stderr, throws on failure. */
-    static String adb(Project p, String adbExe, List<String> args, boolean ignoreExit = false) {
-        def out = new ByteArrayOutputStream()
-        def result = p.exec {
-            commandLine([adbExe] + args)
-            standardOutput = out
-            errorOutput = out
-            ignoreExitValue = true
-        }
-        def text = out.toString().trim()
-        if (!ignoreExit && result.exitValue != 0) {
-            throw new GradleException("adb ${args.join(' ')} failed (exit ${result.exitValue}):\n$text")
-        }
-        return text
-    }
-
-    static boolean hasSplitInstall(Project p, String adbExe) {
-        def dump = adb(p, adbExe, ['shell', 'dumpsys', 'package', PACKAGE], true)
-        return dump.contains('splits=[base, TeamCode]')
-    }
-
-    static void restartApp(Project p, String adbExe) {
-        adb(p, adbExe, ['shell', 'am', 'force-stop', PACKAGE])
-        adb(p, adbExe, ['shell', 'monkey', '-p', PACKAGE, '-c', 'android.intent.category.LAUNCHER', '1'], true)
+        return new File(android.sdkDirectory, "platform-tools/adb${isWindows ? '.exe' : ''}")
     }
 }

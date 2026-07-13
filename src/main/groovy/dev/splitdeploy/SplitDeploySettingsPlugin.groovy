@@ -27,6 +27,8 @@ import org.gradle.api.initialization.Settings
  *                        then restart the RC app (a few seconds end-to-end)
  *      installFullApp  — full base+split install (first time / SDK or library
  *                        changes)
+ *      splitDeployDoctor — read-only device/base/duplicate-class preflight
+ *      rollbackTeamCode — restore the split backed up before the last deploy
  *      initSplitDeploy — writes Android Studio run configurations (.run/)
  */
 class SplitDeploySettingsPlugin implements Plugin<Settings> {
@@ -47,8 +49,8 @@ class SplitDeploySettingsPlugin implements Plugin<Settings> {
         File baseDir = new File(settings.rootDir, '.splitdeploy/FtcBase')
         File mainDir = new File(baseDir, 'src/main')
         mainDir.mkdirs()
-        new File(settings.rootDir, '.splitdeploy/.gitignore').text = '*\n'
-        new File(mainDir, 'AndroidManifest.xml').text = BASE_MANIFEST
+        writeIfChanged(new File(settings.rootDir, '.splitdeploy/.gitignore'), '*\n')
+        writeIfChanged(new File(mainDir, 'AndroidManifest.xml'), BASE_MANIFEST)
 
         settings.include(':FtcBase')
         settings.project(':FtcBase').projectDir = baseDir
@@ -59,6 +61,13 @@ class SplitDeploySettingsPlugin implements Plugin<Settings> {
             } else if (project.path == ':TeamCode') {
                 project.pluginManager.apply(TeamCodeFeaturePlugin)
             }
+        }
+    }
+
+    private static void writeIfChanged(File file, String content) {
+        if (!file.exists() || file.getText('UTF-8') != content) {
+            file.parentFile.mkdirs()
+            file.setText(content, 'UTF-8')
         }
     }
 }

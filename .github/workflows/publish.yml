@@ -1,6 +1,6 @@
 name: Publish to Maven repo (GitHub Pages)
 
-# Pushing a tag like v0.1.0 publishes that version to the gh-pages branch,
+# Pushing a tag like v0.2.0 publishes that version to the gh-pages branch,
 # which GitHub Pages serves at https://repo.cyclezlab.com.
 on:
   push:
@@ -39,7 +39,7 @@ jobs:
           java-version: '17'
 
       - name: Build and stage Maven artifacts
-        run: ./gradlew publishAllPublicationsToStagingRepository
+        run: ./gradlew check validatePlugins publishAllPublicationsToStagingRepository
 
       - name: Add landing page
         run: cp pages/index.html build/staging-repo/index.html
