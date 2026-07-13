@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.2.2
+
+- Block AGP's raw device tasks (`installDebug`, `installRelease`,
+  `uninstallAll`, ...) on every module. They bypassed all split-deploy safety
+  (`installDebug` replaces the app with a base APK that has no TeamCode
+  split); IDEs list them as runnable entry points. They now fail fast and
+  point to `installFullApp` / `deployTeamCode`, and are hidden from the
+  grouped task listing.
+
 ## 0.2.1
 
 - `initSplitDeploy` writes only the two everyday run configurations

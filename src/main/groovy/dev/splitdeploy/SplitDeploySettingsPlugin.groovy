@@ -56,6 +56,9 @@ class SplitDeploySettingsPlugin implements Plugin<Settings> {
         settings.project(':FtcBase').projectDir = baseDir
 
         settings.gradle.beforeProject { project ->
+            // Every Android module gets AGP's raw install/uninstall tasks;
+            // block them so the plugin tasks are the only device entry points.
+            UnsafeDeviceTaskGuard.guard(project)
             if (project.path == ':FtcBase') {
                 project.pluginManager.apply(FtcBasePlugin)
             } else if (project.path == ':TeamCode') {
