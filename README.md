@@ -38,7 +38,7 @@ pluginManagement {
 }
 
 plugins {
-    id 'ftc.splitdeploy' version '0.2.4'
+    id 'ftc.splitdeploy' version '0.2.5'
 }
 
 include ':FtcRobotController'
@@ -70,7 +70,7 @@ dependencies, manifest, code) exactly as it is.
 | Action | Task / dropdown entry | When |
 |---|---|---|
 | **Fast deploy** | `deployTeamCode` / *“TeamCode fast deploy”* | After every code edit. Builds + installs only your split, restarts the RC app. |
-| **Full install** | `installFullApp` / *“Robot full install”* | First time; after changing `build.dependencies.gradle`, the FTC SDK version, or anything outside TeamCode. |
+| **Full install** | `installFullApp` / *“TeamCode”* | First time; after changing `build.dependencies.gradle`, the FTC SDK version, or anything outside TeamCode. |
 | **Preflight** | `splitDeployDoctor` | Read-only check of the device, split layout, duplicate OnBot classes, and base compatibility. |
 | **Rollback** | `rollbackTeamCode` | Restores the split backed up immediately before the most recent changed fast deploy. |
 | Generate run configs | `initSplitDeploy` | Once per project (writes `.run/*.xml`, shared with the whole team via git). |

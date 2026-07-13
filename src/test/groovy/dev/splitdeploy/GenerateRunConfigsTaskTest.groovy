@@ -25,7 +25,7 @@ class GenerateRunConfigsTaskTest {
 
         def files = output.listFiles().findAll { it.name.endsWith('.run.xml') }
         assertEquals(2, files.size())
-        assertEquals(['Robot full install.run.xml', 'TeamCode fast deploy.run.xml'],
+        assertEquals(['TeamCode fast deploy.run.xml', 'TeamCode.run.xml'],
             files*.name.sort())
         files.each { file ->
             def xml = new XmlSlurper().parse(file)
@@ -48,12 +48,13 @@ class GenerateRunConfigsTaskTest {
         output.mkdirs()
         new File(output, 'Split deploy doctor.run.xml').text = '<component />'
         new File(output, 'TeamCode rollback.run.xml').text = '<component />'
+        new File(output, 'Robot full install.run.xml').text = '<component />'
         task.runDirectory.set(output)
 
         task.generate()
 
         def names = output.listFiles()*.name.sort()
-        assertEquals(['Robot full install.run.xml', 'TeamCode fast deploy.run.xml'], names)
+        assertEquals(['TeamCode fast deploy.run.xml', 'TeamCode.run.xml'], names)
     }
 
     @Test

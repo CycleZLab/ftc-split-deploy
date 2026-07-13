@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.2.5
+
+- The generated run configurations are now *TeamCode* (full install — the
+  familiar stock entry name, backed by the safe `installFullApp`) and
+  *TeamCode fast deploy*. The *Robot full install* entry from earlier 0.2.x
+  versions is removed on the next `initSplitDeploy`.
+
 ## 0.2.4
 
 - Permanently stop Android Studio from auto-creating an "FtcBase" Android App

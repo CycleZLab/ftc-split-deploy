@@ -35,11 +35,15 @@ abstract class GenerateRunConfigsTask extends DefaultTask {
         directory.mkdirs()
         new File(directory, 'TeamCode fast deploy.run.xml').text =
             gradleRunConfig('TeamCode fast deploy', ':TeamCode:deployTeamCode')
-        new File(directory, 'Robot full install.run.xml').text =
-            gradleRunConfig('Robot full install', ':FtcBase:installFullApp')
+        // Named like the stock FTC run configuration: pressing it performs the
+        // safe full install (base + TeamCode split), which is what the stock
+        // "TeamCode" entry effectively did.
+        new File(directory, 'TeamCode.run.xml').text =
+            gradleRunConfig('TeamCode', ':FtcBase:installFullApp')
         // Stale configs from older plugin versions (doctor/rollback are still
         // available as Gradle tasks, just not as dropdown entries).
-        ['Split deploy doctor.run.xml', 'TeamCode rollback.run.xml'].each {
+        ['Split deploy doctor.run.xml', 'TeamCode rollback.run.xml',
+         'Robot full install.run.xml'].each {
             new File(directory, it).delete()
         }
         logger.lifecycle('Wrote .run/ configurations. Reload the project to see them in Android Studio.')
