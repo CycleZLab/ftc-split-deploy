@@ -38,7 +38,7 @@ pluginManagement {
 }
 
 plugins {
-    id 'ftc.splitdeploy' version '0.2.3'
+    id 'ftc.splitdeploy' version '0.2.4'
 }
 
 include ':FtcRobotController'

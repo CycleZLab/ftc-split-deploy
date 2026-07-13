@@ -1,5 +1,5 @@
 package dev.splitdeploy
 
 class SplitDeployPluginVersion {
-    static final String CURRENT = '0.2.3'
+    static final String CURRENT = '0.2.4'
 }

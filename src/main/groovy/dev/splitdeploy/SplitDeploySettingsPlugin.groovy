@@ -39,6 +39,16 @@ class SplitDeploySettingsPlugin implements Plugin<Settings> {
      The real application manifest (activities, permissions, ...) is merged in
      from the FtcRobotController library module. -->
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Stops Android Studio from auto-creating an "FtcBase" Android App run
+         configuration after every Gradle sync: AS skips app modules that
+         require the watch feature and declare no launcher activity in their
+         own manifest (AndroidRunConfigurations.kt). uses-feature entries are
+         Play Store filtering metadata only; adb/PackageInstaller installs
+         ignore them and nothing changes at runtime on the Control Hub or a
+         phone Robot Controller. -->
+    <uses-feature
+        android:name="android.hardware.type.watch"
+        android:required="true"/>
     <application/>
 </manifest>
 '''

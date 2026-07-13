@@ -1,5 +1,17 @@
 # Changelog
 
+## 0.2.4
+
+- Permanently stop Android Studio from auto-creating an "FtcBase" Android App
+  run configuration after every Gradle sync. The generated FtcBase manifest
+  stub now declares the watch hardware `uses-feature`, which makes the IDE's
+  post-sync config creator skip the module (it skips watch-required app
+  modules with no launcher activity in their own manifest). `uses-feature`
+  entries are Play Store filtering metadata only: adb/PackageInstaller
+  installs ignore them and nothing changes at runtime on the Control Hub or a
+  phone Robot Controller. The base manifest changes, so one `installFullApp`
+  is required after upgrading.
+
 ## 0.2.3
 
 - Actually hide the blocked AGP device tasks from the grouped task listing:
