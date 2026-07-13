@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>ftc.splitdeploy</groupId>
+  <artifactId>ftc.splitdeploy.gradle.plugin</artifactId>
+  <version>0.2.1</version>
+  <packaging>pom</packaging>
+  <name>FTC Split Deploy</name>
+  <description>Fast TeamCode iteration for FTC: packages TeamCode as a split APK and partially installs only that split (a few hundred KB) instead of reinstalling the whole Robot Controller app. Uses only official Android mechanisms (package-manager split sessions) — no custom classloaders.</description>
+  <dependencies>
+    <dependency>
+      <groupId>dev.splitdeploy</groupId>
+      <artifactId>ftc-split-deploy</artifactId>
+      <version>0.2.1</version>
+    </dependency>
+  </dependencies>
+</project>
